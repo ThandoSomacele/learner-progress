@@ -118,14 +118,15 @@ This application is configured for easy deployment to [Railway](https://railway.
 2. Go to [railway.app](https://railway.app) and click "Start a New Project"
 3. Select "Deploy from GitHub repo"
 4. Choose your repository
-5. Railway will automatically detect the Laravel application and use the `nixpacks.toml` configuration
-6. Set the following environment variables in the Railway dashboard:
-   - `APP_KEY`: Generate using `php artisan key:generate --show` locally
+5. Railway will automatically detect the Laravel application and use Railpack (Railway's modern builder)
+6. Click **Settings → Networking → Generate Domain** to create a public URL
+7. Set the following environment variables in the Railway dashboard (**Variables** tab):
+   - `APP_KEY`: Generate using `php artisan key:generate --show` locally (REQUIRED - app won't work without this!)
    - `APP_ENV`: `production`
    - `APP_DEBUG`: `false`
-   - `APP_URL`: Your Railway app URL (e.g., `https://your-app.railway.app`)
+   - `APP_URL`: Your Railway app URL (e.g., `https://your-app-production.up.railway.app`)
    - All other variables from `.env.example`
-7. Deploy! Railway will:
+8. Deploy! Railway will:
    - Install dependencies
    - Build frontend assets
    - Run migrations automatically
@@ -164,18 +165,23 @@ This application is configured for easy deployment to [Railway](https://railway.
 
 #### Configuration Files
 
-The following files configure Railway deployment:
+The following file configures Railway deployment:
 
-- **`nixpacks.toml`**: Defines build phases, dependencies (PHP 8.2, Composer, Node.js), and start command
-- **`railway.json`**: Specifies builder and deployment settings
-- **`Procfile`**: Defines the web process (runs migrations and starts the server)
+- **`railway.json`**: Specifies Railpack as the builder and deployment settings
+
+Railway uses **Railpack**, which automatically handles Laravel applications with:
+- FrankenPHP web server (modern, high-performance PHP server)
+- Automatic database migrations and seeders
+- Storage symlink creation
+- Application optimization (config/route/view caching)
 
 #### Post-Deployment
 
-- Your app will be available at: `https://your-app-name.railway.app`
-- View logs in the Railway dashboard
+- Your app will be available at the domain you generated (e.g., `https://your-app-production.up.railway.app`)
+- View logs in the Railway dashboard under the **Deployments** tab
 - SQLite database persists in Railway's volume storage
-- Each deployment automatically runs migrations
+- Each deployment automatically runs migrations and optimizations
+- FrankenPHP provides high-performance request handling
 
 #### Important Notes
 
