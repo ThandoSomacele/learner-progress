@@ -39,4 +39,20 @@ class Enrolment extends Model
     protected $casts = [
         'progress' => 'decimal:2',
     ];
+
+    /**
+     * Get the learner that owns the enrolment.
+     */
+    public function learner()
+    {
+        return $this->belongsTo(Learner::class);
+    }
+
+    /**
+     * Get the course that owns the enrolment.
+     */
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }
