@@ -8,28 +8,28 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Learner Progress Dashboard</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Track learner enrolments and progress across courses</p>
+            <h1 class="text-3xl font-bold text-gray-900">Learner Progress Dashboard</h1>
+            <p class="text-gray-600 mt-2">Track learner enrolments and progress across courses</p>
         </header>
 
         <div x-data="progressDashboard(@js($learners), @js($courses), @js($selectedCourse), '{{ $sortDirection }}')"
              class="space-y-6">
 
             <!-- Filters and Controls -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- Course Filter -->
                     <div>
-                        <label for="course-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="course-filter" class="block text-sm font-medium text-gray-700 mb-2">
                             Filter by Course
                         </label>
                         <select id="course-filter"
                                 x-model="selectedCourse"
                                 @change="applyFilters()"
-                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                class="w-full rounded-md border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             <option value="">All Courses</option>
                             @foreach($courses as $course)
                                 <option value="{{ $course->id }}" {{ $selectedCourse == $course->id ? 'selected' : '' }}>
@@ -41,50 +41,52 @@
 
                     <!-- Sort Control -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
                             Sort by Progress
                         </label>
                         <div class="flex gap-2">
                             <button @click="sortProgress('asc')"
-                                    :class="sortDirection === 'asc' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                    :class="sortDirection === 'asc' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
                                     class="flex-1 px-4 py-2 rounded-md font-medium transition-colors hover:opacity-80">
                                 Low to High
                             </button>
                             <button @click="sortProgress('desc')"
-                                    :class="sortDirection === 'desc' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                    :class="sortDirection === 'desc' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
                                     class="flex-1 px-4 py-2 rounded-md font-medium transition-colors hover:opacity-80">
                                 High to Low
                             </button>
-                            <button @click="clearSort()"
-                                    x-show="sortDirection"
-                                    class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium transition-colors hover:opacity-80">
-                                Clear
-                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reset All Filters -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Actions
+                        </label>
+                        <button @click="resetAllFilters()"
+                                x-show="selectedCourse || sortDirection"
+                                class="w-full px-4 py-2 rounded-md bg-gray-600 text-white font-medium transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            Reset All Filters
+                        </button>
+                        <div x-show="!selectedCourse && !sortDirection" class="w-full px-4 py-2 text-center text-sm text-gray-400 italic">
+                            No filters active
                         </div>
                     </div>
                 </div>
 
-                <!-- Reset All Filters Button -->
-                <div x-show="selectedCourse || sortDirection" class="mt-4 flex justify-center">
-                    <button @click="resetAllFilters()"
-                            class="px-6 py-2 rounded-md bg-red-600 text-white font-medium transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                        Reset All Filters
-                    </button>
-                </div>
-
                 <!-- Stats Summary -->
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="filteredLearners.length"></div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">Total Learners</div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="text-2xl font-bold text-blue-600" x-text="filteredLearners.length"></div>
+                        <div class="text-sm text-gray-600">Total Learners</div>
                     </div>
-                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                        <div class="text-2xl font-bold text-green-600 dark:text-green-400" x-text="totalEnrolments"></div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">Total Enrolments</div>
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="text-2xl font-bold text-green-600" x-text="totalEnrolments"></div>
+                        <div class="text-sm text-gray-600">Total Enrolments</div>
                     </div>
-                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" x-text="averageProgress + '%'"></div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">Average Progress</div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="text-2xl font-bold text-purple-600" x-text="averageProgress + '%'"></div>
+                        <div class="text-sm text-gray-600">Average Progress</div>
                     </div>
                 </div>
             </div>
@@ -93,30 +95,30 @@
             <div class="space-y-4">
                 <!-- Empty State -->
                 <template x-if="filteredLearners.length === 0">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+                    <div class="bg-white rounded-lg shadow p-12 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                         </svg>
-                        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No learners found</h3>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters to see results.</p>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900">No learners found</h3>
+                        <p class="mt-2 text-sm text-gray-500">Try adjusting your filters to see results.</p>
                     </div>
                 </template>
 
                 <!-- Learner Cards -->
                 <template x-for="learner in filteredLearners" :key="learner.id">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow">
+                    <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
                         <div class="p-6">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white" x-text="learner.full_name"></h3>
+                                <h3 class="text-xl font-semibold text-gray-900" x-text="learner.full_name"></h3>
                                 <div class="flex items-center gap-3">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Courses:</span>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+                                        <span class="text-sm text-gray-500">Courses:</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-gray-900"
                                               x-text="learner.enrolments.length">
                                         </span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Avg Progress:</span>
+                                        <span class="text-sm text-gray-500">Avg Progress:</span>
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
                                               :class="getProgressColorClass(learner.average_progress)"
                                               x-text="learner.average_progress + '%'">
@@ -128,21 +130,21 @@
                             <!-- Enrolments -->
                             <div class="space-y-3">
                                 <template x-if="learner.enrolments.length === 0">
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 italic">No enrolments</p>
+                                    <p class="text-sm text-gray-500 italic">No enrolments</p>
                                 </template>
 
                                 <template x-for="enrolment in learner.enrolments" :key="enrolment.course_name">
-                                    <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="enrolment.course_name"></span>
+                                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                        <span class="text-sm font-medium text-gray-700" x-text="enrolment.course_name"></span>
                                         <div class="flex items-center gap-3">
                                             <!-- Progress Bar -->
-                                            <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                            <div class="w-32 bg-gray-200 rounded-full h-2">
                                                 <div class="h-2 rounded-full transition-all"
                                                      :class="getProgressBarColorClass(parseFloat(enrolment.progress))"
                                                      :style="`width: ${Math.min(parseFloat(enrolment.progress), 100)}%`">
                                                 </div>
                                             </div>
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-white w-12 text-right" x-text="enrolment.progress"></span>
+                                            <span class="text-sm font-semibold text-gray-900 w-12 text-right" x-text="enrolment.progress"></span>
                                         </div>
                                     </div>
                                 </template>
