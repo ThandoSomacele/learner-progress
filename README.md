@@ -171,7 +171,7 @@ The following file configures Railway deployment:
 
 Railway uses **Railpack**, which automatically handles Laravel applications with:
 - FrankenPHP web server (modern, high-performance PHP server)
-- Automatic database migrations and seeders
+- Automatic database migrations (runs on each deployment)
 - Storage symlink creation
 - Application optimization (config/route/view caching)
 
@@ -182,6 +182,16 @@ Railway uses **Railpack**, which automatically handles Laravel applications with
 - SQLite database persists in Railway's volume storage
 - Each deployment automatically runs migrations and optimizations
 - FrankenPHP provides high-performance request handling
+
+**Seeding the Database:**
+
+After each deployment, you'll need to manually seed the database with sample data:
+
+1. Visit: `https://your-app-production.up.railway.app/seed-database`
+2. You should see a JSON response confirming the seeding was successful
+3. Navigate to `/learner-progress` to view the populated dashboard
+
+**Note:** Due to Railway's ephemeral filesystem with SQLite, the database will be empty after each deployment. The seeding route provides an easy way to repopulate it.
 
 #### Important Notes
 
