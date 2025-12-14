@@ -15,7 +15,7 @@
             <p class="text-gray-600 dark:text-gray-400 mt-2">Track learner enrolments and progress across courses</p>
         </header>
 
-        <div x-data="progressDashboard(@js($learners), @js($courses), {{ $selectedCourse ?? 'null' }}, '{{ $sortDirection }}')"
+        <div x-data="progressDashboard(@js($learners), @js($courses), @js($selectedCourse), '{{ $sortDirection }}')"
              class="space-y-6">
 
             <!-- Filters and Controls -->
@@ -60,6 +60,14 @@
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Reset All Filters Button -->
+                <div x-show="selectedCourse || sortDirection" class="mt-4 flex justify-center">
+                    <button @click="resetAllFilters()"
+                            class="px-6 py-2 rounded-md bg-red-600 text-white font-medium transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        Reset All Filters
+                    </button>
                 </div>
 
                 <!-- Stats Summary -->
@@ -149,7 +157,7 @@
             Alpine.data('progressDashboard', (initialLearners, allCourses, selectedCourseId, initialSort) => ({
                 learners: initialLearners,
                 courses: allCourses,
-                selectedCourse: selectedCourseId || '',
+                selectedCourse: selectedCourseId ?? '',
                 sortDirection: initialSort || '',
 
                 get filteredLearners() {
@@ -214,6 +222,10 @@
                         url.searchParams.set('course_id', this.selectedCourse);
                     }
                     window.location.href = url.toString();
+                },
+
+                resetAllFilters() {
+                    window.location.href = '/learner-progress';
                 },
 
                 getProgressColorClass(progress) {
