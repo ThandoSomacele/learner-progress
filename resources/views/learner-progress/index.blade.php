@@ -31,9 +31,11 @@
                                 @change="applyFilters()"
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             <option value="">All Courses</option>
-                            <template x-for="course in courses" :key="course.id">
-                                <option :value="course.id" x-text="course.name"></option>
-                            </template>
+                            @foreach($courses as $course)
+                                <option value="{{ $course->id }}" {{ $selectedCourse == $course->id ? 'selected' : '' }}>
+                                    {{ $course->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
