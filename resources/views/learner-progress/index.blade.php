@@ -64,11 +64,11 @@
                             Actions
                         </label>
                         <button @click="resetAllFilters()"
-                                x-show="selectedCourse || sortDirection"
+                                x-show="selectedCourse || sortDirection || selectedLetter"
                                 class="w-full px-4 py-2 rounded-md bg-gray-600 text-white font-medium transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                             Reset All Filters
                         </button>
-                        <div x-show="!selectedCourse && !sortDirection" class="w-full px-4 py-2 text-center text-sm text-gray-400 italic">
+                        <div x-show="!selectedCourse && !sortDirection && !selectedLetter" class="w-full px-4 py-2 text-center text-sm text-gray-400 italic">
                             No filters active
                         </div>
                     </div>
@@ -88,6 +88,37 @@
                         <div class="text-2xl font-bold text-purple-600" x-text="averageProgress + '%'"></div>
                         <div class="text-sm text-gray-600">Average Progress</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Alphabet Filter -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-medium text-gray-700">Filter by Last Name</h3>
+                    <button @click="clearLetterFilter()"
+                            x-show="selectedLetter"
+                            class="text-xs text-gray-600 hover:text-gray-900 underline">
+                        Clear
+                    </button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button @click="selectedLetter = ''"
+                            :class="selectedLetter === '' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                            class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
+                        All
+                    </button>
+                    <template x-for="letter in alphabet" :key="letter">
+                        <button @click="selectedLetter = letter"
+                                :disabled="!hasLearnersWithLetter(letter)"
+                                :class="{
+                                    'bg-blue-600 text-white': selectedLetter === letter,
+                                    'bg-gray-100 text-gray-700 hover:bg-gray-200': selectedLetter !== letter && hasLearnersWithLetter(letter),
+                                    'bg-gray-50 text-gray-300 cursor-not-allowed': !hasLearnersWithLetter(letter)
+                                }"
+                                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+                                x-text="letter">
+                        </button>
+                    </template>
                 </div>
             </div>
 
@@ -163,6 +194,8 @@
                 courses: allCourses,
                 selectedCourse: selectedCourseId ?? '',
                 sortDirection: initialSort || '',
+                selectedLetter: '',
+                alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
 
                 get filteredLearners() {
                     let filtered = this.learners;
@@ -174,6 +207,14 @@
                                 this.courses.find(c => c.id == this.selectedCourse)?.name === e.course_name
                             )
                         );
+                    }
+
+                    // Apply letter filter (by lastname)
+                    if (this.selectedLetter) {
+                        filtered = filtered.filter(learner => {
+                            const lastname = learner.full_name.split(' ').pop();
+                            return lastname.toUpperCase().startsWith(this.selectedLetter);
+                        });
                     }
 
                     // Apply sorting
@@ -230,6 +271,17 @@
 
                 resetAllFilters() {
                     window.location.href = '/learner-progress';
+                },
+
+                clearLetterFilter() {
+                    this.selectedLetter = '';
+                },
+
+                hasLearnersWithLetter(letter) {
+                    return this.learners.some(learner => {
+                        const lastname = learner.full_name.split(' ').pop();
+                        return lastname.toUpperCase().startsWith(letter);
+                    });
                 },
 
                 getProgressColorClass(progress) {
